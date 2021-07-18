@@ -1,0 +1,23 @@
+--- build-aarch64-perl-5.32.1/win32/GNUmakefile.orig	2021-07-18 12:14:00.129604900 -0700
++++ build-aarch64-perl-5.32.1/win32/GNUmakefile	2021-07-18 12:21:50.411018900 -0700
+@@ -422,6 +422,10 @@
+ WIN64 := undef
+ PROCESSOR_ARCHITECTURE := x86
+ endif
++ifeq ($(GCCTARGET),aarch64-w64-windows-gnu)
++WIN64 := define
++PROCESSOR_ARCHITECTURE := ARM64
++endif
+ endif
+ 
+ PROCESSOR_ARCHITECTURE  ?= x86
+@@ -457,6 +461,9 @@
+ endif
+ 
+ ARCHITECTURE = $(PROCESSOR_ARCHITECTURE)
++ifeq ($(ARCHITECTURE),ARM64)
++ARCHITECTURE	= aarch64
++endif
+ ifeq ($(ARCHITECTURE),AMD64)
+ ARCHITECTURE	= x64
+ endif

@@ -49,7 +49,8 @@ source=("https://www.cpan.org/src/5.0/${_realname}-${pkgver}.tar.xz"
         "011-no-description-in-def.patch"
         "012-link-shared.patch"
         "013-noreturn.patch"
-        "014-memory-alignment.patch")
+        "014-memory-alignment.patch"
+        "015-arm64.patch")
 ## Populated by the updpkgprovs script
 provides=(
     "${MINGW_PACKAGE_PREFIX}-perl-_charnames=1.480.0"
@@ -709,7 +710,8 @@ sha256sums=('57cc47c735c8300a8ce2fa0643507b44c4ae59012bfdad0121313db639e02309'
             '68fc914809ab3402ed2afed110c18ae2934500026c23669e1e543edc58df45a2'
             'f18140d3f21602eb3a4aba6c2f5df250551690dd50b64dae10162e49f0b4ed72'
             '749e96f97a162c53f4cf7bda83d1b18f4d3e587e7980e07f5e8968943d6ea774'
-            'ff48bfcf20ad9bf88aeabbb0a40a85ccbc294a87c769093147ed06e53db7be1b')
+            'ff48bfcf20ad9bf88aeabbb0a40a85ccbc294a87c769093147ed06e53db7be1b'
+            'c0e9b07abfb2d1123d6f1c9036ec2652395f86501c035a89fe7fd39c36f08889')
 
 declare -rg _build="build-${CARCH}-${_realname}-${pkgver}"
 declare -gA _destdir=()
@@ -739,7 +741,8 @@ prepare() {
         011-no-description-in-def.patch \
         012-link-shared.patch \
         013-noreturn.patch \
-        014-memory-alignment.patch
+        014-memory-alignment.patch \
+        015-arm64.patch
 
     if [[ ${MINGW_PACKAGE_PREFIX} == *-clang-* ]] || [[ ${MINGW_PACKAGE_PREFIX} == *-ucrt-* ]]; then
         apply_patch_with_msg \
