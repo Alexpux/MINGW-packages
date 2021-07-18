@@ -1,0 +1,21 @@
+--- build-x86_64-perl-5.32.1/win32/GNUmakefile.orig	2021-07-17 20:07:39.223737900 -0700
++++ build-x86_64-perl-5.32.1/win32/GNUmakefile	2021-07-17 20:09:23.255031500 -0700
+@@ -1549,15 +1549,15 @@
+ 
+ $(PERLIMPLIB) : perldll.def
+ ifeq ($(CCTYPE),GCC)
+-	$(IMPLIB) -k -d perldll.def -D $(PERLDLLBASE) -l $(PERLIMPLIB) -e $(PERLEXPLIB)
++	$(IMPLIB) -k -d perldll.def -D $(PERLDLLBASE) -l $(PERLIMPLIB)
+ else
+ 	lib -def:perldll.def -machine:$(ARCHITECTURE) /OUT:$(PERLIMPLIB)
+ endif
+ 
+-$(PERLDLL): $(PERLEXPLIB) $(PERLDLL_OBJ) $(PERLDLL_RES) Extensions_static
++$(PERLDLL): perldll.def $(PERLDLL_OBJ) $(PERLDLL_RES) Extensions_static
+ ifeq ($(CCTYPE),GCC)
+ 	$(LINK32) -mdll -o $@ $(BLINK_FLAGS) \
+-	   $(PERLDLL_OBJ) $(shell type Extensions_static) $(LIBFILES) $(PERLEXPLIB)
++	   $(PERLDLL_OBJ) $(shell type Extensions_static) $(LIBFILES) perldll.def
+ else
+ 	$(LINK32) -dll -out:$@ $(BLINK_FLAGS) \
+ 	    @Extensions_static \

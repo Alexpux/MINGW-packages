@@ -1,0 +1,22 @@
+--- build-x86_64-perl-5.32.1/win32/config.gc.orig	2021-07-17 20:31:12.380350800 -0700
++++ build-x86_64-perl-5.32.1/win32/config.gc	2021-07-17 20:31:23.380021200 -0700
+@@ -854,7 +854,7 @@
+ known_extensions='~static_ext~ ~dynamic_ext~ ~nonxs_ext~'
+ ksh=''
+ ld='~ARCHPREFIX~g++'
+-lddlflags='-mdll ~LINK_FLAGS~'
++lddlflags='-shared ~LINK_FLAGS~'
+ ldflags='~LINK_FLAGS~'
+ ldflags_uselargefiles=''
+ ldlibpthname=''
+--- build-x86_64-perl-5.32.1/win32/GNUmakefile.orig	2021-07-17 21:30:21.723765300 -0700
++++ build-x86_64-perl-5.32.1/win32/GNUmakefile	2021-07-17 21:30:30.989377000 -0700
+@@ -1556,7 +1556,7 @@
+ 
+ $(PERLDLL): perldll.def $(PERLDLL_OBJ) $(PERLDLL_RES) Extensions_static
+ ifeq ($(CCTYPE),GCC)
+-	$(LINK32) -mdll -o $@ $(BLINK_FLAGS) \
++	$(LINK32) -shared -o $@ $(BLINK_FLAGS) \
+ 	   $(PERLDLL_OBJ) $(shell type Extensions_static) $(LIBFILES) perldll.def
+ else
+ 	$(LINK32) -dll -out:$@ $(BLINK_FLAGS) \
