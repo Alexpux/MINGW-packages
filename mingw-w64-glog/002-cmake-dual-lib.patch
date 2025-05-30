@@ -1,0 +1,116 @@
+diff -Naur glog-0.7.1-orig/CMakeLists.txt glog-0.7.1/CMakeLists.txt
+--- glog-0.7.1-orig/CMakeLists.txt	2025-05-30 10:42:50.120942100 +0300
++++ glog-0.7.1/CMakeLists.txt	2025-05-30 10:50:50.687889600 +0300
+@@ -321,6 +321,14 @@
+ # Add additional CMake find modules here.
+ set (_glog_CMake_MODULES)
+ 
++if (BUILD_SHARED_LIBS)
++  set (LIB_TYPE SHARED)
++  set (target_siffix "shared")
++else ()
++  set (LIB_TYPE STATIC)
++  set (target_siffix "static")
++endif()
++
+ if (Unwind_FOUND)
+   # Copy the module only if libunwind is actually used.
+   list (APPEND _glog_CMake_MODULES ${glog_SOURCE_DIR}/cmake/FindUnwind.cmake)
+@@ -402,7 +410,7 @@
+   COMMAND ${CMAKE_COMMAND} -E touch ${_glog_EMPTY_SOURCE}
+ )
+ 
+-add_library (glog
++add_library (glog ${LIB_TYPE}
+   $<TARGET_OBJECTS:glog_internal>
+   ${_glog_EMPTY_SOURCE}
+ )
+@@ -415,6 +423,9 @@
+ # CMake always uses the generated export header
+ target_compile_definitions (glog PUBLIC GLOG_USE_GLOG_EXPORT)
+ 
++target_compile_definitions(
++    glog PUBLIC "$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:GLOG_STATIC_DEFINE>")
++
+ if (_glog_USE_WINDOWS_PORT)
+   target_compile_definitions (glog PRIVATE GLOG_USE_WINDOWS_PORT)
+ endif (_glog_USE_WINDOWS_PORT)
+@@ -998,7 +1009,7 @@
+   ${glog_BINARY_DIR}/glog-config-version.cmake
+   COMPATIBILITY SameMajorVersion)
+ 
+-export (TARGETS glog NAMESPACE glog:: FILE glog-targets.cmake)
++export (TARGETS glog NAMESPACE glog:: FILE glog-${target_siffix}-targets.cmake)
+ export (PACKAGE glog)
+ 
+ get_filename_component (_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE)
+@@ -1061,4 +1061,5 @@
+ )
+ 
+ install (EXPORT glog-targets NAMESPACE glog:: DESTINATION
+-  ${_glog_CMake_INSTALLDIR})
++  ${_glog_CMake_INSTALLDIR}
++  FILE glog-${target_siffix}-targets.cmake)
+diff -Naur glog-0.7.1-orig/glog-config.cmake.in glog-0.7.1/glog-config.cmake.in
+--- glog-0.7.1-orig/glog-config.cmake.in	2024-06-08 18:07:34.000000000 +0300
++++ glog-0.7.1/glog-config.cmake.in	2025-05-30 10:52:51.838068300 +0300
+@@ -12,4 +12,58 @@
+ @gflags_DEPENDENCY@
+ @Unwind_DEPENDENCY@
+ 
+-include (${CMAKE_CURRENT_LIST_DIR}/glog-targets.cmake)
++set(glog_known_comps static shared)
++set(glog_comp_static NO)
++set(glog_comp_shared NO)
++foreach (glog_comp IN LISTS ${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS)
++    if (glog_comp IN_LIST glog_known_comps)
++        set(glog_comp_${glog_comp} YES)
++    else ()
++        set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE
++            "glog does not recognize component `${glog_comp}`.")
++        set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
++        return()
++    endif ()
++endforeach ()
++
++if (glog_comp_static AND glog_comp_shared)
++    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE
++        "glog `static` and `shared` components are mutually exclusive.")
++    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
++    return()
++endif ()
++
++set(glog_static_targets "${CMAKE_CURRENT_LIST_DIR}/glog-static-targets.cmake")
++set(glog_shared_targets "${CMAKE_CURRENT_LIST_DIR}/glog-shared-targets.cmake")
++
++macro(glog_load_targets type)
++    if (NOT EXISTS "${glog_${type}_targets}")
++        set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE
++            "glog `${type}` libraries were requested but not found.")
++        set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
++        return()
++    endif ()
++    include("${glog_${type}_targets}")
++endmacro()
++
++if (glog_comp_static)
++    glog_load_targets(static)
++elseif (glog_comp_shared)
++    glog_load_targets(shared)
++elseif (DEFINED glog_SHARED_LIBS AND glog_SHARED_LIBS)
++    glog_load_targets(shared)
++elseif (DEFINED glog_SHARED_LIBS AND NOT glog_SHARED_LIBS)
++    glog_load_targets(static)
++elseif (BUILD_SHARED_LIBS)
++    if (EXISTS "${glog_shared_targets}")
++        glog_load_targets(shared)
++    else ()
++        glog_load_targets(static)
++    endif ()
++else ()
++    if (EXISTS "${glog_static_targets}")
++        glog_load_targets(static)
++    else ()
++        glog_load_targets(shared)
++    endif ()
++endif ()

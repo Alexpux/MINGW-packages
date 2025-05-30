@@ -4,7 +4,7 @@ _realname=glog
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
 pkgver=0.7.1
-pkgrel=3
+pkgrel=4
 pkgdesc="C++ implementation of the Google logging module (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
@@ -23,18 +23,19 @@ depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
 conflicts=("${MINGW_PACKAGE_PREFIX}-ng-log")
 replaces=("${MINGW_PACKAGE_PREFIX}-ng-log")
 source=("https://github.com/google/glog/archive/v${pkgver}/${_realname}-${pkgver}.tar.gz"
-        "001-force-linking-to-dbghelp.patch")
+        "001-force-linking-to-dbghelp.patch"
+        "002-cmake-dual-lib.patch")
 sha256sums=('00e4a87e87b7e7612f519a41e491f16623b12423620006f59f5688bfd8d13b08'
-            'ff28832d0aae3bbb71564ce85ca0b86e2839342d6631434c71cb5573506884bb')
+            'ff28832d0aae3bbb71564ce85ca0b86e2839342d6631434c71cb5573506884bb'
+            '27b82016d9f67bec4ec0b4f2868d5a2c68e8089c2be19d50b6f1b51a237a7f9f')
 
 prepare() {
   cd "${srcdir}/${_realname}-${pkgver}"
-  patch -Np1 -i "../001-force-linking-to-dbghelp.patch"
+  patch -Np1 -i "${srcdir}/001-force-linking-to-dbghelp.patch"
+  patch -Np1 -i "${srcdir}/002-cmake-dual-lib.patch"
 }
 
 build() {
-  mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
-
   declare -a _extra_config
   if check_option "debug" "n"; then
     _extra_config+=("-DCMAKE_BUILD_TYPE=Release")
@@ -42,11 +43,25 @@ build() {
     _extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
   fi
 
+  mkdir -p "${srcdir}/shared-${MSYSTEM}" && cd "${srcdir}/shared-${MSYSTEM}"
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
   ${MINGW_PREFIX}/bin/cmake.exe \
     -G"Ninja" \
     -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
     -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_DLL_NAME_WITH_SOVERSION=ON \
+    "${_extra_config[@]}" \
+    -DWITH_PKGCONFIG=ON \
+    "../${_realname}-${pkgver}"
+
+  ${MINGW_PREFIX}/bin/cmake.exe --build ./
+
+  mkdir -p "${srcdir}/static-${MSYSTEM}" && cd "${srcdir}/static-${MSYSTEM}"
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+    -G"Ninja" \
+    -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_DLL_NAME_WITH_SOVERSION=ON \
     "${_extra_config[@]}" \
     -DWITH_PKGCONFIG=ON \
@@ -61,7 +76,10 @@ check() {
 }
 
 package() {
-  cd "${srcdir}/build-${MSYSTEM}"
+  cd "${srcdir}/static-${MSYSTEM}"
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake.exe --install .
+
+  cd "${srcdir}/shared-${MSYSTEM}"
   DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake.exe --install .
 
   install -Dm644 "${srcdir}"/${_realname}-${pkgver}/COPYING "${pkgdir}"${MINGW_PREFIX}/share/licenses/${_realname}/COPYING
@@ -69,5 +87,5 @@ package() {
   local WINPREFIX=$(cygpath -wm ${MINGW_PREFIX})
   # Fix paths
   sed -i "s|${WINPREFIX}|${MINGW_PREFIX}|g" \
-    "${pkgdir}"${MINGW_PREFIX}/lib/cmake/glog/glog-targets.cmake
+    "${pkgdir}"${MINGW_PREFIX}/lib/cmake/glog/glog*-targets.cmake
 }
