@@ -53,29 +53,6 @@ index 490e45f9db..5b9bb2baad 100644
  
  # Hardcoded metadata for GN
  GN_BASE_METADATA = {
-@@ -184,12 +185,16 @@ def CleanupLicenseMetadata(dep_metadata):
-     dep_metadata['License File'] = dep_metadata['License File'][0]
- 
- def IsChromiumSubmoduleGitHistoryAvailable():
--  baseline_cmd_result = subprocess.run(
--      FIND_BASELINE_COMMIT_GIT_COMMAND,
--      cwd=ROOT,
--      capture_output=True,
--      encoding='utf-8')
--  return baseline_cmd_result.returncode == 0 and baseline_cmd_result.stdout.strip()
-+  try:
-+    baseline_cmd_result = subprocess.run(
-+        FIND_BASELINE_COMMIT_GIT_COMMAND,
-+        cwd=ROOT,
-+        capture_output=True,
-+        encoding='utf-8')
-+    return baseline_cmd_result.returncode == 0 and baseline_cmd_result.stdout.strip()
-+  except:
-+    # some issues running git
-+    return False
- 
- 
- def GetTargetMetadatas(gn_binary: str, gn_out_dir: str, gn_target: str):
 @@ -301,16 +306,16 @@ def main():
  
    logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING)

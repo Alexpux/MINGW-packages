@@ -939,5 +939,27 @@ diff --git a/src/3rdparty/chromium/third_party/dawn/src/tint/utils/system/env_wi
 +
 +#include <cstdlib>
  #include <string_view>
- 
+
  namespace tint {
+diff --git a/src/3rdparty/chromium/third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h b/src/3rdparty/chromium/third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h
+--- a/src/3rdparty/chromium/third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h
++++ b/src/3rdparty/chromium/third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h
+@@ -1840,6 +1840,10 @@
+         return desc;
+     }
+
++// mingw-w64's <d3d12.h> (used by media/gpu/windows under __MINGW32__) has no
++// MSAA UAV dimensions nor D3D12_UNORDERED_ACCESS_VIEW_DESC::Texture2DMSArray.
++#if !defined(__MINGW32__)
++
+     static inline CD3DX12_UNORDERED_ACCESS_VIEW_DESC Tex2DMS(
+         DXGI_FORMAT Format) noexcept
+     {
+@@ -1862,6 +1866,7 @@
+         desc.Texture2DMSArray.ArraySize = ArraySize;
+         return desc;
+     }
++#endif  // !defined(__MINGW32__)
+
+     static inline CD3DX12_UNORDERED_ACCESS_VIEW_DESC Tex3D(
+         DXGI_FORMAT Format,

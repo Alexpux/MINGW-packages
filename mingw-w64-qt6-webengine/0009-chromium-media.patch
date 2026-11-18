@@ -702,6 +702,23 @@ index b728ba29c9..265a5f264d 100644
  // Windows SDK headers should be included after DirectX headers.
  
  #include <wrl.h>
+diff --git a/src/3rdparty/chromium/media/gpu/windows/d3d12_video_encode_delegate.h b/src/3rdparty/chromium/media/gpu/windows/d3d12_video_encode_delegate.h
+--- a/src/3rdparty/chromium/media/gpu/windows/d3d12_video_encode_delegate.h
++++ b/src/3rdparty/chromium/media/gpu/windows/d3d12_video_encode_delegate.h
+@@ -5,7 +5,13 @@
+ #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_DELEGATE_H_
+ #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_DELEGATE_H_
+
++// mingw-w64's <d3d12.h> (widl) provides the struct-returning GetDesc()
++// wrappers; the bundled header only has the GetDesc(RetVal) ABI form there.
++#if defined(__MINGW32__)
++#include <d3d12.h>
++#else
+ #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
++#endif
+ // Windows SDK headers should be included after DirectX headers.
+
+ #include <wrl.h>
 diff --git a/src/3rdparty/chromium/media/gpu/windows/d3d12_video_encoder_wrapper.h b/src/3rdparty/chromium/media/gpu/windows/d3d12_video_encoder_wrapper.h
 index bdf2b06538..526dbcb81b 100644
 --- a/src/3rdparty/chromium/media/gpu/windows/d3d12_video_encoder_wrapper.h

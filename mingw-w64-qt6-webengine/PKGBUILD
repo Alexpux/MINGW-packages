@@ -4,9 +4,7 @@ _realname=qt6-webengine
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-debug")
-_pkgver=6.140.0
-_rc_part=rc
-pkgver=${_pkgver}${_rc_part}
+pkgver=6.140.0
 pkgrel=1
 pkgdesc='Provides support for web applications using the Chromium browser project'
 arch=(any)
@@ -56,9 +54,8 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-qt6-tools"
              "${MINGW_PACKAGE_PREFIX}-qt6-webchannel"
              "rsync")
-_pkgfn="${_realname/6-/}-everywhere-src-${_pkgver}"
-source=(#"https://download.qt.io/official_releases/qt/${pkgver%.*}/${pkgver}/submodules/${_pkgfn}.tar.xz"
-        https://download.qt.io/development_releases/qtwebengine/${_pkgver}-${_rc_part}/${_pkgfn}-${_rc_part}.tar.xz
+_pkgfn="${_realname/6-/}-everywhere-src-${pkgver}"
+source=(https://download.qt.io/official_releases/qtwebengine/${pkgver%.*}/${pkgver}/src/${_pkgfn}.tar.xz
         0001-cmake-configure-fixes.patch
         0002-chromium-add-mingw-toolchain.patch
         0003-chromium-base.patch
@@ -121,7 +118,7 @@ source=(#"https://download.qt.io/official_releases/qt/${pkgver%.*}/${pkgver}/sub
         mingw_compat_net.h
         mingw_compat_win.h
         mingw_compat_winrt.h)
-sha256sums=('61257967afd9803a1db6403e86ea25c4efff8fad479bda365a9d81bfd709f621'
+sha256sums=('82352854a1d01dfe6abeefaf023554e4722c1d7df48ba3ce0078f6c0a9c7e1a3'
             '2802dc2524da0f06521a5e4d09f10cf9087ec3379d1fc9cb581a87230ead7b13'
             '20ee341c6ae0354c2fa0445d1f8a1645e7801a42c852fb341f12189ec4e7a09a'
             '94d35f6ebf427423a55d0d7af0c0ff0dc641718a21d4f80fa4f1d8e5188569ba'
@@ -130,11 +127,11 @@ sha256sums=('61257967afd9803a1db6403e86ea25c4efff8fad479bda365a9d81bfd709f621'
             '6aecee774568dd90b484cea16e285bd3581f85f04ff0cab3240d02642ea2735b'
             '652d800274209560a4762ff757314adabca610c9b0041da60d96a3c974235545'
             '774cb2a42ecb83be1e63714909917e51738e2298db787e4bc0460a9384d9ad79'
-            'd8ae3015c79e3974322a3e8e656ecbd517dbaaa120d4222a5dea8195358897be'
+            'ebf7005138953dc312eea6ebac8544e829336bcb3b9024423eeb799bbdf570cc'
             'b822dc7478dbabde663f05e22992abd8ca3aeea546e75332fa316d127b89b307'
             '03d9260f72276d2c6e9535d2bf49773938a55eed7eea328a2e3c239879fb9d81'
             '4c257ace589c137388f6debc4bb453656e5f3166f70a3d71806d23fc124bc8be'
-            '6008b311567e405ebc3e48c0225f169221e15071fa4e8766bf3d46f24b83bc8f'
+            'af8747ce0206b9765b977aeada0d3ecfe56b3852e5cfe394f39771bd8055410e'
             '46f9086a60152aaa61296c4289696d2c7bece24811ee9604ce980931dd55a4e5'
             'db308436c0e117f79419a5c3557119e1df69a3f99d4e3fa8176232330465ef97'
             '0b8b23f0f3cae3b7dd216d37c9afb327ba85b23c671e3833141a3f43b3c17700'
@@ -144,13 +141,13 @@ sha256sums=('61257967afd9803a1db6403e86ea25c4efff8fad479bda365a9d81bfd709f621'
             '6c9cab9fe6e3622dc75ca1ab85569571e14b2a26c8672bde1b6bc5ae5e022b90'
             '2920111578cb25f406406b9e73e04b34559c3e4ac8f26a2b7b1efbcd54de71b6'
             '9d4139f23a30fea565ebc96fd17a3ee16dde668ef8a85bf3052fd78dcf5992ea'
-            '773d249054c1bdd7023e69492e8a633a5aad295cc5b7bbd65a06ea6d47977e4b'
+            '1531c44f02e4f3823dd25eb0c445f84f121efa6e78d330d02e6b3b4f84899a50'
             'e0b62636af066ba765791217c840853237e24ec35267ad6991663f8db2d728db'
             '4a2cbcb5f92665ea578ffa4381d72ffc88035132daf2d7bf532b7f2270beb586'
             '9f67ec33ee738ccba463f5e42700fe0a874a55831e5ea48e1e7251b94139bfa6'
             'b51e43c76e648ae007c9853cd36d474d6e4c4d9b5de339bcae1bdc41a3029b67'
             'a0f2dfbc074610948d16c445a3d65b599d8b075446fe2f05f9441eb791fb7c10'
-            'ec5570bd3b32b08a49850c441e3ebf45cd26a978a8e719b8accc16fba572ef57'
+            'd480d102f87ceeac662bbc1773156bbf7f1f2eee1df711ee17ad0f16748acd7c'
             '9642ea5fa3995994f07c1e5bede5e45488b5eb1d208a385ad3ada26cc0b41ad4'
             '6b3354884905bb8b01d9de01f105d3e0c9b41a76d9d2772a5737361b4028e835'
             'afde3c59e4d2b86b3fd7da5686e2d6f4137c2450121f371ece2debc6936d18f5'
