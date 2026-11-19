@@ -53,6 +53,8 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-qt6-positioning"
              "${MINGW_PACKAGE_PREFIX}-qt6-tools"
              "${MINGW_PACKAGE_PREFIX}-qt6-webchannel"
+             "bison"
+             "flex"
              "rsync")
 _pkgfn="${_realname/6-/}-everywhere-src-${pkgver}"
 source=(https://download.qt.io/official_releases/qtwebengine/${pkgver%.*}/${pkgver}/src/${_pkgfn}.tar.xz
